@@ -189,6 +189,7 @@ int main(int argc, char *argv[])
     v = (float *) calloc(NUM, sizeof(float));        // Speicher reservieren
 
     printf("Perform vector sorting %d times...\n", iter);
+    printf("\n seriell: \n");
     for (int i = 0; i < iter; i++) {               // Wiederhole das Sortieren
         for (int j = 0; j < NUM; j++){      // Mit Zufallszahlen initialisieren
             v[j] = (float)rand();
@@ -207,9 +208,11 @@ int main(int argc, char *argv[])
 //-------------------------------------------------------------------------------------
     //1. Versuch
 
-    /*  Die zwei while-Schleifen in 2 sections (bzw auf 2 threads )aufzuteilen verlangsamt den Durchlauf, obwohl sie nicht aufeinander warten.
-        Das Aufteilen ist komplexer als der serielle Durchlauf.
+    /*  Durch das Verschachtelungsprinzip wurde versucht die Rekusionaufrufe zu parallelisieren, um den Algorithmus zu beschleunigen. Dieser ist jedoch minimal langsamer geworden. Dabei ist unklar ob alle 
+    Rekursionsaufrufe parallel laufen oder jeweils nur die beiden(linke und rechte Hälfte des zu sortierenden Bereichs).
     */
+    printf("\n 1. Versuch: \n");
+
     for (int i = 0; i < iter; i++) {               // Wiederhole das Sortieren
         for (int j = 0; j < NUM; j++){      // Mit Zufallszahlen initialisieren
             v[j] = (float)rand();
@@ -227,9 +230,10 @@ int main(int argc, char *argv[])
 //-------------------------------------------------------------------------
     //2. Versuch
 
-    /*  Die beiden if-Bedingungen in zwei sections sind minimal schneller als das Serielle, dadurch das zwei Rekursionsaufrufe , 
-    die zuvor nacheinander, jetzt nebeneinander  durchgeführt werden.
+    /*  Die beiden if-Bedingungen in zwei sections aufzuteilen ist deutlich langsamer als den Algorithmus seriell durchlaufen zu lassen. 
+    Da die sections von bestimmten Threads abhängig sind, muessen diese warten bis die Threads frei sind.
     */
+    printf("\n 2. Versuch: \n");
     for (int i = 0; i < iter; i++) {               // Wiederhole das Sortieren
         for (int j = 0; j < NUM; j++){      // Mit Zufallszahlen initialisieren
             v[j] = (float)rand();
@@ -248,9 +252,10 @@ int main(int argc, char *argv[])
 //-------------------------------------------------------------------------
     //3. Versuch
 
-    /*  Die beiden if-Bedingungen in zwei sections sind minimal schneller als das Serielle, dadurch das zwei Rekursionsaufrufe , 
-    die zuvor nacheinander, jetzt nebeneinander  durchgeführt werden.
+    /*  Bei dem 3. Versuch wurden die Rekursionaufrufe auf Tasks verteilt. Da diese ungebunden sind kann ein Task den nächstbesten freien Thread nutzen und auf ihm weiterarbeiten.
+    Diese Methode ist bisher die, die den Algorithmus am schnellsten durchlaeuft. 
     */
+    printf("\n 3. Versuch: \n");
     for (int i = 0; i < iter; i++) {               // Wiederhole das Sortieren
         for (int j = 0; j < NUM; j++){      // Mit Zufallszahlen initialisieren
             v[j] = (float)rand();
